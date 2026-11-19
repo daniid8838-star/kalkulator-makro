@@ -15,6 +15,7 @@
 @media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#121815;--surface:#1a221e;--fg:#e4ebe6;--muted:#9aa8a0;--line:#2c3832;--accent:#7cc39d;--accent-soft:#1f3329;--on-accent:#0f1a14;--p:#7fb3dc;--c:#e0b25a;--f:#e48a7c;--warn-bg:#3a2f12;--warn-fg:#f0cf7a;--track:#232b27;color-scheme:dark}}
 :root[data-theme="dark"]{--bg:#121815;--surface:#1a221e;--fg:#e4ebe6;--muted:#9aa8a0;--line:#2c3832;--accent:#7cc39d;--accent-soft:#1f3329;--on-accent:#0f1a14;--p:#7fb3dc;--c:#e0b25a;--f:#e48a7c;--warn-bg:#3a2f12;--warn-fg:#f0cf7a;--track:#232b27;color-scheme:dark}
 *{box-sizing:border-box}
+[hidden]{display:none!important}
 body{background:var(--bg);color:var(--fg);font-family:var(--body);font-size:14px;line-height:1.5}
 .wrap{max-width:1180px;margin:0 auto;padding-block:24px 48px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));display:grid;gap:18px}
 header{display:grid;gap:6px}
@@ -84,6 +85,36 @@ input:focus-visible,select:focus-visible,button:focus-visible{outline:2px solid 
 .btn{border:1px solid var(--line);background:var(--surface);border-radius:6px;padding:8px 12px;cursor:pointer;font-size:13px}
 .btn.pri{background:var(--accent);color:var(--on-accent);border-color:var(--accent)}
 #copyOut{width:100%;font:12px var(--mono);min-height:120px;border:1px solid var(--line);border-radius:6px;padding:8px;background:var(--bg);color:var(--fg)}
+.pf{display:grid;gap:10px;border-top:1px solid var(--line);padding-top:14px}
+.pf label{display:grid;gap:4px;font-size:12px;color:var(--muted)}
+.pf label em{font-style:normal;opacity:.75}
+.pfrow{display:flex;justify-content:space-between;font-size:13px}
+.pfrow b{font-family:var(--mono);font-variant-numeric:tabular-nums}
+.gin{display:flex;align-items:center;gap:6px}.gin input{flex:1;min-width:0;font-family:var(--mono);text-align:right}
+.pfout{background:var(--accent-soft);border-radius:8px;padding:10px 12px;display:grid;gap:4px}
+.pfk b{font:600 26px/1.1 var(--mono);font-variant-numeric:tabular-nums}
+.pfm{display:flex;gap:12px;flex-wrap:wrap;font-family:var(--mono);font-size:13px;font-variant-numeric:tabular-nums}
+.pfm.sm{font-size:12px;color:var(--muted)}.pfm b{font-weight:600}
+.btn:disabled{opacity:.5;cursor:default}
+.newrow{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.nb{padding:14px;display:grid;gap:12px}
+.fgrid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
+.fgrid .wide{grid-column:1/-1}
+@media (max-width:560px){.fgrid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+.fgrid label{display:grid;gap:4px;font-size:12px;color:var(--muted);min-width:0}
+.fgrid label em{font-style:normal;opacity:.75}
+.fgrid input,.fgrid select{width:100%;min-width:0}
+input[type=text]{background:var(--surface);border:1px solid var(--line);border-radius:6px;padding:8px 10px;font-size:15px}
+.per{display:flex;gap:6px}.per select{width:auto}
+.nbfoot{display:grid;gap:8px;margin-top:4px}
+.prev{font:600 15px var(--mono);font-variant-numeric:tabular-nums}
+.ck{font-size:13px;display:flex;gap:6px;align-items:center}
+.err{color:var(--f);font-size:13px}.err:empty{display:none}
+.new{font-size:10.5px;padding:1px 6px;border-radius:999px;background:var(--accent-soft);color:var(--accent);margin-left:4px;vertical-align:1px}
+details summary{cursor:pointer;font-size:13px;color:var(--muted)}
+.nbi{display:flex;justify-content:space-between;gap:10px;align-items:center;padding:8px 0;border-bottom:1px solid var(--line);font-size:13px}
+.nbi small{display:block;color:var(--muted);font-family:var(--mono);font-size:11.5px}
+.res.addnew .plus{color:var(--accent)}
 footer{font-size:12.5px;color:var(--muted);max-width:90ch;display:grid;gap:4px}
 @media (max-width:520px){.row{grid-template-columns:minmax(0,1fr) auto}.row .qty{grid-column:1/2}}
 </style>
@@ -112,6 +143,32 @@ footer{font-size:12.5px;color:var(--muted);max-width:90ch;display:grid;gap:4px}
    </div>
    <div class="results" id="res" role="listbox" aria-label="Hasil pencarian"></div>
    <div class="hint" id="hint"></div>
+   <div class="newrow"><button class="btn" type="button" id="openNew">+ Bahan baru</button><span class="hint" id="syncNote"></span></div>
+  </section>
+
+  <section class="panel nb" id="newPanel" aria-label="Tambah bahan baru" hidden>
+   <div class="cart-head" style="padding:0"><h2 id="nbTitle">Bahan baru</h2><button class="btn" type="button" id="nbClose">Tutup</button></div>
+   <form id="nbForm" novalidate>
+    <div class="fgrid">
+     <label class="wide" for="nbName">Nama bahan<input id="nbName" type="text" required placeholder="mis. Protein Granola Vendor X" autocomplete="off"></label>
+     <label for="nbCat">Kategori<select id="nbCat"><option>Food</option><option>Beverage</option><option>Pastry</option><option>Meat</option><option>Lainnya</option></select></label>
+     <label for="nbPer">Nilai gizi per<span class="per"><input id="nbPer" type="number" inputmode="decimal" min="0" step="any" value="100"><select id="nbBase" aria-label="Satuan basis"><option value="g">g</option><option value="ml">ml</option></select></span></label>
+     <label for="nbP"><span class="pc">Protein (g)</span><input id="nbP" type="number" inputmode="decimal" min="0" step="any" placeholder="0"></label>
+     <label for="nbC"><span class="cc">Karbo (g)</span><input id="nbC" type="number" inputmode="decimal" min="0" step="any" placeholder="0"></label>
+     <label for="nbF"><span class="fc">Lemak (g)</span><input id="nbF" type="number" inputmode="decimal" min="0" step="any" placeholder="0"></label>
+     <label for="nbFi">Serat (g) <em>opsional</em><input id="nbFi" type="number" inputmode="decimal" min="0" step="any" placeholder="–"></label>
+     <label for="nbS">Gula (g) <em>opsional</em><input id="nbS" type="number" inputmode="decimal" min="0" step="any" placeholder="–"></label>
+     <label for="nbPcs">Berat per pcs (g) <em>opsional</em><input id="nbPcs" type="number" inputmode="decimal" min="0" step="any" placeholder="mis. 50"></label>
+     <label class="wide" for="nbNote">Sumber / catatan<input id="nbNote" type="text" placeholder="mis. label supplier, estimasi chef" autocomplete="off"></label>
+    </div>
+    <div class="nbfoot">
+     <div class="prev" id="nbPrev">= 0 kcal per 100 g</div>
+     <label class="ck" for="nbChk"><input id="nbChk" type="checkbox"> Tandai "perlu cek" (estimasi)</label>
+     <div class="acts"><button class="btn pri" type="submit" id="nbSave">Simpan &amp; tambahkan</button><button class="btn" type="button" id="nbDel" hidden>Hapus bahan</button></div>
+     <div class="err" id="nbErr" role="alert"></div>
+    </div>
+   </form>
+   <details id="nbListWrap"><summary>Bahan tambahan tersimpan (<span id="nbCount">0</span>)</summary><div id="nbList"></div></details>
   </section>
 
   <section class="panel cart" aria-label="Daftar item">
@@ -131,6 +188,20 @@ footer{font-size:12.5px;color:var(--muted);max-width:90ch;display:grid;gap:4px}
   </div>
   <div class="sub"><span>Serat <b id="tFi">0</b> g</span><span>Gula <b id="tS">0</b> g</span><span><b id="tN">0</b> item</span></div>
   <div class="warn" id="warn" hidden></div>
+  <div class="pf">
+   <h2>Cek per gramasi</h2>
+   <div class="pfrow"><span>Berat total bahan</span><b id="tW">0 g</b></div>
+   <label for="yieldG">Berat jadi setelah dimasak <em>opsional</em><span class="gin"><input id="yieldG" type="number" inputmode="decimal" min="0" step="any"><span>g</span></span></label>
+   <label for="portG">Gramasi saji / yang dicek<span class="gin"><input id="portG" type="number" inputmode="decimal" min="0" step="any" value="10"><span>g</span></span></label>
+   <div class="pfout">
+    <div class="pfk"><b id="pfK">–</b> kcal</div>
+    <div class="pfm"><span class="pc">P <b id="pfP">–</b> g</span><span class="cc">C <b id="pfC">–</b> g</span><span class="fc">F <b id="pfF">–</b> g</span></div>
+    <div class="pfm sm"><span>Serat <b id="pfFi">–</b> g</span><span>Gula <b id="pfS">–</b> g</span></div>
+   </div>
+   <div class="hint" id="pfRule"></div>
+   <div class="hint" id="pfNote" hidden></div>
+   <button class="btn" type="button" id="saveAsBahan">Simpan resep ini sebagai bahan baru</button>
+  </div>
   <div class="acts">
    <button class="btn pri" type="button" id="copy">Salin ringkasan</button>
    <button class="btn" type="button" id="clear">Kosongkan</button>
@@ -152,11 +223,17 @@ const RAW=[["RMFCCP001","Anchovies Whole Fillet Oil","Food","Condiments/Cooking 
 // menu: [kode, nama, kategori, P, C, F, serat, gula, perluCek, catatan] per porsi
 const MENU=[];
 const $=id=>document.getElementById(id);
-const ITEMS=[
+let CUSTOM=[]; // bahan tambahan: {id,name,cat,base,P,C,F,Fi,S,pcs,note,chk} per 100 g/ml
+const BASE=[
  ...RAW.map(r=>({id:r[0],name:r[1],type:'raw',cat:r[2]+' · '+r[3],base:r[4],P:r[5],C:r[6],F:r[7],Fi:r[8]||0,S:r[9]||0,pcs:r[10],chk:!!r[12],note:r[13],src:r[11]})),
  ...MENU.map(r=>({id:r[0],name:r[1],type:'menu',cat:'Menu · '+r[2],base:'porsi',P:r[3],C:r[4],F:r[5],Fi:r[6]||0,S:r[7]||0,pcs:null,chk:!!r[8],note:r[9]}))
 ];
-const BY=Object.fromEntries(ITEMS.map(i=>[i.id,i]));
+let ITEMS=BASE,BY={};
+function rebuild(){
+ ITEMS=[...CUSTOM.map(c=>({id:c.id,name:c.name,type:'raw',custom:true,cat:(c.cat||'Lainnya')+' · Bahan tambahan',base:c.base==='ml'?'ml':'g',P:+c.P||0,C:+c.C||0,F:+c.F||0,Fi:+c.Fi||0,S:+c.S||0,pcs:+c.pcs||null,chk:!!c.chk,note:c.note||''})),...BASE];
+ BY=Object.fromEntries(ITEMS.map(i=>[i.id,i]));
+}
+rebuild();
 const kc=(p,c,f)=>p*4+c*4+f*9;
 const nf=(v,d=1)=>(Math.round(v*10**d)/10**d).toLocaleString('id-ID',{minimumFractionDigits:d,maximumFractionDigits:d});
 const esc=s=>String(s??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
@@ -170,7 +247,7 @@ function factor(it,qty,unit){ // multiplier vs per-100 (raw) or per-porsi (menu)
 function line(c){const it=BY[c.id];const k=factor(it,c.qty||0,c.unit);return{it,P:it.P*k,C:it.C*k,F:it.F*k,Fi:it.Fi*k,S:it.S*k}}
 
 function save(){try{localStorage.setItem('reloadMacroCart',JSON.stringify(cart))}catch(e){}}
-function load(){try{const v=JSON.parse(localStorage.getItem('reloadMacroCart')||'null');if(Array.isArray(v))return v.filter(c=>BY[c.id])}catch(e){}return null}
+function load(){try{const v=JSON.parse(localStorage.getItem('reloadMacroCart')||'null');if(Array.isArray(v))return v.filter(c=>c&&c.id)}catch(e){}return null}
 
 function search(){
  const q=$('q').value.trim().toLowerCase();const toks=q.split(/\s+/).filter(Boolean);
@@ -180,7 +257,8 @@ function search(){
  else L=[];
  found=L.slice(0,40);sel=0;
  $('res').innerHTML=found.map((i,n)=>{const per=i.type==='menu'?'/porsi':'/100 '+i.base;
-  return `<button type="button" class="res${n===0?' on':''}" role="option" data-id="${esc(i.id)}"><span class="plus">+</span><span class="nm"><b>${esc(i.name)}</b><small>${esc(i.id)} · ${esc(i.cat)}${i.chk?' · <span class="chk">perlu cek</span>':''}</small></span><span class="k">${nf(kc(i.P,i.C,i.F),0)} kcal${per}<br><span class="pc">P ${nf(i.P)}</span> <span class="cc">C ${nf(i.C)}</span> <span class="fc">F ${nf(i.F)}</span></span></button>`}).join('');
+  return `<button type="button" class="res${n===0?' on':''}" role="option" data-id="${esc(i.id)}"><span class="plus">+</span><span class="nm"><b>${esc(i.name)}${i.custom?'<span class="new">baru</span>':''}</b><small>${esc(i.id)} · ${esc(i.cat)}${i.chk?' · <span class="chk">perlu cek</span>':''}</small></span><span class="k">${nf(kc(i.P,i.C,i.F),0)} kcal${per}<br><span class="pc">P ${nf(i.P)}</span> <span class="cc">C ${nf(i.C)}</span> <span class="fc">F ${nf(i.F)}</span></span></button>`}).join('')
+  +(toks.length&&type!=='menu'?`<button type="button" class="res addnew" data-new="1"><span class="plus">＋</span><span class="nm"><b>Tambah "${esc($('q').value.trim())}" sebagai bahan baru</b><small>Isi protein, karbo, lemak dari label atau data supplier</small></span></button>`:'');
  const nMenu=MENU.length;
  $('hint').textContent=toks.length?(L.length?`${L.length} hasil${L.length>40?' (40 teratas ditampilkan)':''} · Enter untuk tambah yang teratas`:'Tidak ada yang cocok. Coba nama lain atau kode bahan.')
   :(type==='menu'&&!nMenu?'Data menu belum dimuat. Untuk sekarang pakai raw material.':`${RAW.length} raw material${nMenu?` · ${nMenu} menu`:''} siap dicari.`);
@@ -195,9 +273,9 @@ function add(id){
 }
 function render(){
  $('exTag').hidden=!isExample;
- $('rows').innerHTML=cart.length?cart.map((c,n)=>{const l=line(c),it=l.it;
+ $('rows').innerHTML=cart.some(c=>BY[c.id])?cart.map((c,n)=>{if(!BY[c.id])return'';const l=line(c),it=l.it;
   return `<div class="row" data-id="${esc(c.id)}" data-n="${n}">
-   <div class="nm"><b>${esc(it.name)}</b><small>${esc(it.id)} · ${esc(it.cat)}${it.chk?` · <span class="chk" title="${esc(it.note)}">perlu cek</span>`:''}${c.unit==='pcs'?` · ${it.pcs} g/pcs`:''}</small></div>
+   <div class="nm"><b>${esc(it.name)}</b>${it.custom?'<span class="new">baru</span>':''}<small>${esc(it.id)} · ${esc(it.cat)}${it.chk?` · <span class="chk" title="${esc(it.note)}">perlu cek</span>`:''}${c.unit==='pcs'?` · ${it.pcs} g/pcs`:''}</small></div>
    <div class="qty"><input id="q${n}" type="number" inputmode="decimal" min="0" step="any" value="${c.qty}" aria-label="Qty ${esc(it.name)}">
     <select id="u${n}" aria-label="Satuan">${units(it).map(u=>`<option${u===c.unit?' selected':''}>${u}</option>`).join('')}</select></div>
    <button class="del" type="button" aria-label="Hapus ${esc(it.name)}">×</button>
@@ -207,24 +285,39 @@ function render(){
 }
 function totals(){
  let T={P:0,C:0,F:0,Fi:0,S:0},chk=[];
- cart.forEach(c=>{const l=line(c);['P','C','F','Fi','S'].forEach(k=>T[k]+=l[k]);if(l.it.chk)chk.push(l.it.name)});
+ cart.filter(c=>BY[c.id]).forEach(c=>{const l=line(c);['P','C','F','Fi','S'].forEach(k=>T[k]+=l[k]);if(l.it.chk)chk.push(l.it.name)});
  const K=kc(T.P,T.C,T.F),d=K||1,pp=T.P*4/d*100,pc=T.C*4/d*100,pf=T.F*9/d*100;
  $('tK').textContent=nf(K,0);$('tP').textContent=nf(T.P)+' g';$('tC').textContent=nf(T.C)+' g';$('tF').textContent=nf(T.F)+' g';
  $('pP').textContent=nf(pp,0)+'%';$('pC').textContent=nf(pc,0)+'%';$('pF').textContent=nf(pf,0)+'%';
  $('tFi').textContent=nf(T.Fi);$('tS').textContent=nf(T.S);$('tN').textContent=cart.length;
  $('tBar').innerHTML=K?`<i style="width:${pp}%;background:var(--p)"></i><i style="width:${pc}%;background:var(--c)"></i><i style="width:${pf}%;background:var(--f)"></i>`:'';
  $('warn').hidden=!chk.length;$('warn').innerHTML=chk.length?`${chk.length} item pakai estimasi/asumsi: ${chk.map(esc).join(', ')}.`:'';
- return{T,K,pp,pc,pf};
+ // --- cek per gramasi ---
+ let W=0,noW=0;cart.filter(c=>BY[c.id]).forEach(c=>{const g=grams(c);if(g==null)noW++;else W+=g});
+ $('tW').textContent=nf(W,0)+' g';$('yieldG').placeholder=nf(W,0);
+ const Y=numv('yieldG')||W,G=numv('portG');
+ $('pfNote').textContent=noW?`${noW} item dalam satuan porsi tidak punya berat, jadi tidak ikut berat total.`:'';$('pfNote').hidden=!noW;
+ if(Y>0&&G!=null){const r=G/Y,P=T.P*r,C=T.C*r,F=T.F*r;
+  $('pfK').textContent=nf(kc(P,C,F),0);$('pfP').textContent=nf(P);$('pfC').textContent=nf(C);$('pfF').textContent=nf(F);
+  $('pfFi').textContent=nf(T.Fi*r);$('pfS').textContent=nf(T.S*r);
+  $('pfRule').textContent=`= total × ${nf(G)} ÷ ${nf(Y,0)} g${numv('yieldG')?' (berat jadi)':''} · per 100 g: ${nf(kc(T.P,T.C,T.F)*100/Y,0)} kcal`;
+ }else{['pfK','pfP','pfC','pfF','pfFi','pfS'].forEach(i=>$(i).textContent='–');$('pfRule').textContent=W?'Isi gramasi yang mau dicek.':'Tambahkan bahan dulu.'}
+ $('saveAsBahan').disabled=!(Y>0&&K>0);
+ return{T,K,pp,pc,pf,Y};
 }
+function grams(c){const it=BY[c.id];if(!it||it.type==='menu')return null;const q=c.qty||0;
+ return c.unit==='pcs'?q*(it.pcs||0):(c.unit==='kg'||c.unit==='L')?q*1000:q}
+function numv(id){const v=$(id).value.trim();if(v==='')return null;const n=parseFloat(v.replace(',','.'));return isFinite(n)&&n>=0?n:null}
 function summary(){const{T,K,pp,pc,pf}=totals();
- const L=cart.map(c=>{const l=line(c);return`- ${l.it.name}: ${c.qty} ${c.unit} → ${nf(kc(l.P,l.C,l.F),0)} kcal (P ${nf(l.P)} / C ${nf(l.C)} / F ${nf(l.F)} g)`});
+ const L=cart.filter(c=>BY[c.id]).map(c=>{const l=line(c);return`- ${l.it.name}: ${c.qty} ${c.unit} → ${nf(kc(l.P,l.C,l.F),0)} kcal (P ${nf(l.P)} / C ${nf(l.C)} / F ${nf(l.F)} g)`});
  return['Kalkulator Makro Reload',...L,'',`TOTAL: ${nf(K,0)} kcal`,`Protein ${nf(T.P)} g (${nf(pp,0)}%) · Karbo ${nf(T.C)} g (${nf(pc,0)}%) · Lemak ${nf(T.F)} g (${nf(pf,0)}%)`,`Serat ${nf(T.Fi)} g · Gula ${nf(T.S)} g`].join('\n')}
 
 $('q').addEventListener('input',search);
 $('q').addEventListener('keydown',e=>{const b=[...$('res').children];
  if(e.key==='Enter'&&found[sel]){e.preventDefault();add(found[sel].id)}
+ else if(e.key==='Enter'&&$('q').value.trim()){e.preventDefault();openForm(null,$('q').value.trim())}
  else if((e.key==='ArrowDown'||e.key==='ArrowUp')&&b.length){e.preventDefault();b[sel]?.classList.remove('on');sel=(sel+(e.key==='ArrowDown'?1:-1)+b.length)%b.length;b[sel].classList.add('on');b[sel].scrollIntoView({block:'nearest'})}});
-$('res').addEventListener('click',e=>{const b=e.target.closest('.res');if(b)add(b.dataset.id)});
+$('res').addEventListener('click',e=>{const b=e.target.closest('.res');if(!b)return;if(b.dataset.new)openForm(null,$('q').value.trim());else add(b.dataset.id)});
 document.querySelectorAll('.seg button').forEach(b=>b.addEventListener('click',()=>{type=b.dataset.t;document.querySelectorAll('.seg button').forEach(x=>x.setAttribute('aria-pressed',x===b));search();$('q').focus()}));
 $('rows').addEventListener('input',e=>{const r=e.target.closest('.row');if(!r)return;const c=cart[+r.dataset.n];
  if(e.target.tagName==='INPUT'){c.qty=Math.max(0,parseFloat(e.target.value)||0);isExample=false;save();
@@ -239,10 +332,92 @@ $('copy').addEventListener('click',async()=>{const t=summary(),b=$('copy');
  try{await navigator.clipboard.writeText(t);b.textContent='Tersalin';setTimeout(()=>b.textContent='Salin ringkasan',1500)}
  catch(err){const o=$('copyOut');o.hidden=false;o.value=t;o.focus();o.select()}});
 
+// ---------- Bahan baru ----------
+// Disimpan bersama di database artifact (semua yang buka link melihat bahan yang sama).
+// Kalau database tidak tersedia (mis. versi GitHub), disimpan di browser ini saja.
+let DB=null,editId=null;
+const LKEY='reloadMacroCustom';
+const num=id=>{const v=$(id).value.trim();return v===''?null:Math.max(0,parseFloat(v.replace(',','.'))||0)};
+function localCustom(){try{const v=JSON.parse(localStorage.getItem(LKEY)||'[]');return Array.isArray(v)?v:[]}catch(e){return[]}}
+function saveLocalCustom(){try{localStorage.setItem(LKEY,JSON.stringify(CUSTOM))}catch(e){}}
+function setCustom(list){CUSTOM=list.sort((a,b)=>String(a.name).localeCompare(String(b.name)));rebuild();renderNbList();render();search()}
+function renderNbList(){
+ $('nbCount').textContent=CUSTOM.length;
+ $('nbList').innerHTML=CUSTOM.length?CUSTOM.map(c=>`<div class="nbi"><div><b>${esc(c.name)}</b>${c.chk?' <span class="chk">perlu cek</span>':''}<small>per 100 ${c.base==='ml'?'ml':'g'} · P ${nf(+c.P||0)} · C ${nf(+c.C||0)} · F ${nf(+c.F||0)} · ${nf(kc(+c.P||0,+c.C||0,+c.F||0),0)} kcal${c.pcs?` · ${c.pcs} g/pcs`:''}${c.note?' · '+esc(c.note):''}</small></div><button class="btn" type="button" data-edit="${esc(c.id)}">Ubah</button></div>`).join(''):'<p class="hint">Belum ada bahan tambahan.</p>';
+}
+function preview(){
+ const per=num('nbPer')||100,base=$('nbBase').value,k=100/per;
+ const P=(num('nbP')||0)*k,C=(num('nbC')||0)*k,F=(num('nbF')||0)*k;
+ $('nbPrev').textContent=`= ${nf(kc(P,C,F),0)} kcal per 100 ${base}`+(per!==100?` (P ${nf(P)} · C ${nf(C)} · F ${nf(F)} g per 100 ${base})`:'');
+}
+function openForm(id,name){
+ editId=id;const c=id?CUSTOM.find(x=>x.id===id):null;
+ $('newPanel').hidden=false;$('nbErr').textContent='';
+ $('nbTitle').textContent=c?'Ubah bahan':'Bahan baru';$('nbDel').hidden=!c;
+ $('nbSave').textContent=c?'Simpan perubahan':'Simpan & tambahkan';
+ $('nbName').value=c?c.name:(name||'');$('nbCat').value=c?.cat||'Food';$('nbPer').value=100;$('nbBase').value=c?.base||'g';
+ [['nbP','P'],['nbC','C'],['nbF','F'],['nbFi','Fi'],['nbS','S'],['nbPcs','pcs']].forEach(([f,k])=>$(f).value=c&&c[k]!=null&&c[k]!==''?c[k]:'');
+ $('nbNote').value=c?.note||'';$('nbChk').checked=!!c?.chk;preview();
+ $('newPanel').scrollIntoView({block:'nearest',behavior:'smooth'});$(c||!name?'nbName':'nbP').focus();
+}
+$('openNew').addEventListener('click',()=>openForm(null,$('q').value.trim()));
+$('nbClose').addEventListener('click',()=>{$('newPanel').hidden=true;editId=null});
+['nbPer','nbBase','nbP','nbC','nbF'].forEach(id=>$(id).addEventListener('input',preview));
+$('nbList').addEventListener('click',e=>{const b=e.target.closest('[data-edit]');if(b)openForm(b.dataset.edit)});
+$('nbForm').addEventListener('submit',async e=>{
+ e.preventDefault();const name=$('nbName').value.trim();
+ if(!name){$('nbErr').textContent='Nama bahan wajib diisi.';$('nbName').focus();return}
+ if(num('nbP')==null&&num('nbC')==null&&num('nbF')==null){$('nbErr').textContent='Isi minimal salah satu: protein, karbo, atau lemak.';$('nbP').focus();return}
+ const per=num('nbPer');if(!per){$('nbErr').textContent='"Nilai gizi per" harus lebih dari 0.';$('nbPer').focus();return}
+ if(!editId&&CUSTOM.concat(BASE).some(i=>i.name.toLowerCase()===name.toLowerCase())){$('nbErr').textContent='Nama ini sudah ada. Cari di kolom pencarian atau pakai nama lain.';return}
+ const k=100/per,r2=v=>v==null?null:Math.round(v*k*100)/100;
+ const id=editId||('NEW'+Date.now().toString(36).toUpperCase());
+ const body={name,cat:$('nbCat').value,base:$('nbBase').value,P:r2(num('nbP'))||0,C:r2(num('nbC'))||0,F:r2(num('nbF'))||0,Fi:r2(num('nbFi')),S:r2(num('nbS')),pcs:num('nbPcs')||null,note:$('nbNote').value.trim(),chk:$('nbChk').checked,updatedAt:new Date().toISOString()};
+ const btn=$('nbSave');btn.disabled=true;$('nbErr').textContent='';
+ try{
+  if(DB)await DB.collection('bahan').doc(id).set(body);
+  else{const i=CUSTOM.findIndex(c=>c.id===id);const row={id,...body};if(i>=0)CUSTOM[i]=row;else CUSTOM.push(row);saveLocalCustom();setCustom(CUSTOM)}
+  const wasEdit=!!editId;$('newPanel').hidden=true;editId=null;
+  if(!wasEdit){if(!BY[id]){CUSTOM.push({id,...body});rebuild()}add(id)}
+ }catch(err){$('nbErr').textContent=err&&(err.code==='permission_denied'||err.code==='not_granted')?'Kamu belum punya akses untuk menambah bahan. Minta pemilik halaman memberi akses edit.':'Gagal menyimpan. Cek koneksi lalu coba lagi.'}
+ finally{btn.disabled=false}
+});
+$('nbDel').addEventListener('click',async()=>{
+ const b=$('nbDel');if(b.dataset.sure!=='1'){b.dataset.sure='1';b.textContent='Yakin hapus? Klik lagi';setTimeout(()=>{b.dataset.sure='';b.textContent='Hapus bahan'},3000);return}
+ b.dataset.sure='';b.textContent='Hapus bahan';const id=editId;
+ try{if(DB)await DB.collection('bahan').doc(id).delete();else{CUSTOM=CUSTOM.filter(c=>c.id!==id);saveLocalCustom();setCustom(CUSTOM)}
+  $('newPanel').hidden=true;editId=null}catch(err){$('nbErr').textContent='Gagal menghapus. Mungkin kamu belum punya akses edit.'}
+});
+async function connect(){
+ setCustom(localCustom());$('syncNote').textContent='Bahan baru tersimpan di browser ini.';
+ let db=null;try{db=window.claude?.use?await window.claude.use('db'):null}catch(e){}
+ if(!db)return;
+ DB=db;$('syncNote').textContent='Memuat bahan tambahan…';
+ const t=setTimeout(()=>{$('syncNote').textContent='Bahan tambahan belum termuat. Muat ulang halaman nanti.'},10000);
+ db.collection('bahan').onSnapshot(s=>{clearTimeout(t);$('syncNote').textContent='Bahan baru tersimpan bersama untuk semua yang membuka halaman ini.';
+  setCustom(s.docs.map(d=>({id:d.id,...d.data()})))},
+  ()=>{clearTimeout(t);$('syncNote').textContent='Bahan tambahan tidak bisa dimuat saat ini.'});
+}
+
+// cek per gramasi: simpan isian di browser
+const PKEY='reloadMacroPortion';
+try{const v=JSON.parse(localStorage.getItem(PKEY)||'null');if(v){if(v.y!=null)$('yieldG').value=v.y;if(v.g!=null)$('portG').value=v.g}}catch(e){}
+['yieldG','portG'].forEach(id=>$(id).addEventListener('input',()=>{totals();try{localStorage.setItem(PKEY,JSON.stringify({y:$('yieldG').value,g:$('portG').value}))}catch(e){}}));
+$('saveAsBahan').addEventListener('click',()=>{
+ const{T,Y}=totals();if(!(Y>0))return;
+ const names=cart.filter(c=>BY[c.id]).map(c=>`${BY[c.id].name} ${c.qty}${c.unit}`).join(', ');
+ openForm(null,'');
+ $('nbBase').value='g';$('nbPer').value=Math.round(Y*100)/100;
+ const r2=v=>Math.round(v*100)/100;
+ $('nbP').value=r2(T.P);$('nbC').value=r2(T.C);$('nbF').value=r2(T.F);$('nbFi').value=r2(T.Fi);$('nbS').value=r2(T.S);
+ $('nbNote').value=('Resep: '+names).slice(0,300);
+ $('nbChk').checked=cart.some(c=>BY[c.id]?.chk);preview();$('nbName').focus();
+});
+
 const saved=load();
 if(saved&&saved.length)cart=saved;
 else{cart=[{id:'RMPPST001',qty:2,unit:'pcs'},{id:'RMFDRY040',qty:2,unit:'pcs'},{id:'RMFFTV009',qty:80,unit:'g'},{id:'RMTFSH002',qty:50,unit:'g'}].filter(c=>BY[c.id]);isExample=true}
-render();search();
+render();search();connect();
 </script>
 
 </body>
